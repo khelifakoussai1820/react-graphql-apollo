@@ -16,7 +16,7 @@ const router = createBrowserRouter([
   {path:'/signup', element:<SignUp/>},
   {path:'/login', element:<Login/>},
   {path:'/verify', element:<Verify/>},
-  {path:'/worskpace', element:<WorkspacePage/>},
+  {path:'/workspace', element:<WorkspacePage/>},
   {path:'/errors', element:<ErrorPage/>},
 ])
 
