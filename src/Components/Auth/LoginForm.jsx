@@ -1,83 +1,78 @@
 import { useForm } from "react-hook-form";
-import {useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { login } from "../../api/auth";
+import { useState } from "react";
+import useAuth from "../../hooks/useAuth";
 
-function LoginForm() {
-    const navigate = useNavigate(); 
-    const {register, handleSubmit, formState: {errors, isSubmitting}} = useForm({
-        mode:"onBlur"
-    });
+export default function LoginForm() {
+  const navigate = useNavigate();
+  const { setToken } = useAuth();
+  const [serverError, setServerError] = useState("");
 
-    const onSubmit = async (data) => {
-        try{
-            const res = await login(data);
-            localStorage.setItem("toker", res.token);
-            navigate("/app");
-        }catch (err) {
-            console.err(err.message);
-        }
-        
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm({ mode: "onBlur" });
+
+  const onSubmit = async (data) => {
+    try {
+      setServerError("");
+
+      const res = await login(data);
+
+      const token = res?.token || res?.accessToken || res?.jwt || "";
+      if (!token) {
+        setServerError("No token received from server");
+        return;
+      }
+
+      setToken(token);
+      navigate("/app", { replace: true });
+    } catch (err) {
+      setServerError(err?.message || "Login failed");
     }
+  };
 
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="form">
+      <h2 className="title">login</h2>
+      <p className="helper">use your email + password</p>
 
-    return (<>
+      {serverError ? <div className="errorBox">{serverError}</div> : null}
 
-        <form onSubmit={handleSubmit(onSubmit)} className="max-w-md mx-auto mt-10 space-y-4"> 
-            <h2 className="text-2xl font-bold text-center">Login</h2>
+      <input
+        type="email"
+        placeholder="email"
+        className="input"
+        {...register("email", {
+          required: "Email is required",
+          pattern: {
+            value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+            message: "Invalid email",
+          },
+        })}
+      />
+      {errors.email ? <div className="errorText">{errors.email.message}</div> : null}
 
-            <input 
-                type="email" 
-                {...register("email", {
-                    required: "Email is required", 
-                    pattern: {
-                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                        message: "Invalid Email"
-                    }
-                })}
-                placeholder="Enter your Email"
-                className="borderp-2 w-full rounded"
-            />
+      <input
+        type="password"
+        placeholder="password"
+        className="input"
+        {...register("password", {
+          required: "Password is required",
+          minLength: { value: 6, message: "Min 6 characters" },
+        })}
+      />
+      {errors.password ? <div className="errorText">{errors.password.message}</div> : null}
 
-            {
-                errors.email && (
-                    <p className="text-red-700"> 
-                        {errors.email.message} 
-                    </p>
-                )
-            }
+      <button className="btn btnPrimary" type="submit" disabled={isSubmitting}>
+        {isSubmitting ? "logging in..." : "login"}
+      </button>
 
-            <input 
-                type="password" 
-                {...register("password",{
-                    required : 'Password is required'
-                } )}
-
-                placeholder="Enter your Password"
-                className="border p-2 w-full rounded"
-            />
-
-            {errors.password && (
-                <p className="text-red-600 text-sm">
-                    {errors.password.message}
-                </p>
-            )}
-
-
-            <button
-                type="submit"
-                disabled={isSubmitting}
-                className="bg-black text-white w-full py-2 rounded"
-            >
-
-                {
-                    isSubmitting ? "Logging in..." : "Login"
-                }
-
-            </button>
-        </form>    
-    </>)
-
+      <a className="btn btnSecondary" href="/auth/signup">
+        create account
+      </a>
+    </form>
+  );
 }
-
-
-export default LoginForm;

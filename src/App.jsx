@@ -1,35 +1,40 @@
+import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
 
-import { createBrowserRouter, RouterProvider } from 'react-router'
+import { AuthProvider, useAuthContext } from "./context/AuthContext";
 
-import AppHome from './pages/app/AppHome'
-import PageDetail from './pages/app/PageDetail'
-import WorkspacePage from './pages/app/WorkspacePage'
+import AppHome from "./pages/app/AppHome";
+import WorkspacePage from "./pages/app/WorkspacePage";
 
-import Login from './pages/auth/login'
-import SignUp from './pages/auth/signup'
-import Verify from './pages/auth/verify'
+import Login from "./pages/auth/login";
+import Signup from "./pages/auth/signup";
+import Verify from "./pages/auth/verify";
 
-import ErrorPage from './pages/errors/ErrorPage'
+import ErrorPage from "./pages/errors/ErrorPage";
 
-
-const router = createBrowserRouter([
-  {path:'/', element:<AppHome/>},
-  {path:'/signup', element:<SignUp/>},
-  {path:'/login', element:<Login/>},
-  {path:'/verify', element:<Verify/>},
-  {path:'/worskpace', element:<WorkspacePage/>},
-  {path:'/errors', element:<ErrorPage/>},
-])
-
-
-function App() {
-  
-
-  return (
-    <> <RouterProvider router={router} /> </>
-  )
-    
-  
+function RequireAuth({ children }) {
+  const { isAuthed } = useAuthContext();
+  if (!isAuthed) return <Navigate to="/auth/login" replace />;
+  return children;
 }
 
-export default App
+const router = createBrowserRouter([
+  { path: "/", element: <AppHome /> },
+
+  { path: "/auth/signup", element: <Signup /> },
+  { path: "/auth/login", element: <Login /> },
+  { path: "/auth/verify", element: <Verify /> },
+
+  { path: "/app", element: <RequireAuth><WorkspacePage /></RequireAuth> },
+  { path: "/app/w/:workspaceId", element: <RequireAuth><WorkspacePage /></RequireAuth> },
+  { path: "/app/w/:workspaceId/p/:pageId", element: <RequireAuth><WorkspacePage /></RequireAuth> },
+
+  { path: "*", element: <ErrorPage /> },
+]);
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
+  );
+}
