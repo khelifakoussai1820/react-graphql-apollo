@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from "react";
-import { useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client/react";
 
 import Sidebar from "../../Components/Workspace/Sidebar";
 import Editor from "../../Components/Page/Editor";
