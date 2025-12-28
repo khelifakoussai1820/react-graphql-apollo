@@ -1,5 +1,91 @@
 import useAuth from "../../hooks/useAuth";
 
+/* =======================
+          Styles
+======================= */
+const styles = {
+  sidebar: {
+    width: "260px",
+    background: "#ffffff",
+    borderRight: "1px solid #e5e7eb",
+    padding: "16px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "16px",
+    fontFamily: "Inter, system-ui, sans-serif",
+  },
+
+  header: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+
+  brand: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "4px",
+  },
+
+  tag: {
+    fontSize: "12px",
+    padding: "4px 8px",
+    background: "#f1f5f9",
+    borderRadius: "6px",
+    color: "#475569",
+    width: "fit-content",
+  },
+
+  card: {
+    background: "#f8fafc",
+    borderRadius: "12px",
+    padding: "12px",
+  },
+
+  split: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    fontSize: "14px",
+    fontWeight: 600,
+    color: "#334155",
+  },
+
+  list: {
+    marginTop: "10px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "4px",
+  },
+
+  listItem: {
+    padding: "8px 10px",
+    borderRadius: "8px",
+    cursor: "pointer",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    fontSize: "14px",
+    color: "#334155",
+  },
+
+  listItemActive: {
+    background: "#eef2ff",
+    color: "#4338ca",
+    fontWeight: 600,
+  },
+
+  btnSecondary: {
+    padding: "6px 10px",
+    borderRadius: "8px",
+    border: "1px solid #e5e7eb",
+    background: "#ffffff",
+    fontSize: "12px",
+    cursor: "pointer",
+    fontWeight: 600,
+  },
+};
+
 export default function Sidebar({
   workspaces,
   activeWorkspaceId,
@@ -14,27 +100,30 @@ export default function Sidebar({
   const { logout } = useAuth();
 
   return (
-    <aside className="sidebar">
-      <div className="split">
-        <div>
-          <div className="tag">mini-notion</div>
-          <div className="tag">/graphql</div>
+    <aside style={styles.sidebar}>
+      {/* Header */}
+      <div style={styles.header}>
+        <div style={styles.brand}>
+          <div style={styles.tag}>mini-notion</div>
+          <div style={styles.tag}>/graphql</div>
         </div>
-        <button className="btn btnSecondary" onClick={logout} type="button">logout</button>
+        <button style={styles.btnSecondary} onClick={logout} type="button">
+          logout
+        </button>
       </div>
 
-      <div className="card">
-        <div className="split">
+      {/* Workspaces */}
+      <div style={styles.card}>
+        <div style={styles.split}>
           <div>workspaces</div>
-          <div style={{ display: "flex", gap: "var(--s-1)" }}>
-            <button className="btn btnSecondary" onClick={onCreateWorkspace} type="button" style={{ width: "auto" }}>
+          <div style={{ display: "flex", gap: "6px" }}>
+            <button style={styles.btnSecondary} onClick={onCreateWorkspace} type="button">
               + ws
             </button>
             <button
-              className="btn btnSecondary"
+              style={styles.btnSecondary}
               onClick={onOpenWorkspaceSettings}
               type="button"
-              style={{ width: "auto" }}
               disabled={!activeWorkspaceId}
               title={activeWorkspaceId ? "Manage members & roles" : "Select a workspace first"}
             >
@@ -42,28 +131,34 @@ export default function Sidebar({
             </button>
           </div>
         </div>
-        <div className="list" style={{ marginTop: "var(--s-2)" }}>
+
+        <div style={styles.list}>
           {(workspaces || []).map((ws) => (
             <div
               key={ws.id}
-              className={`listItem ${ws.id === activeWorkspaceId ? "listItemActive" : ""}`}
               onClick={() => onSelectWorkspace(ws.id)}
               role="button"
               tabIndex={0}
+              style={{
+                ...styles.listItem,
+                ...(ws.id === activeWorkspaceId ? styles.listItemActive : {}),
+              }}
             >
               <span>{ws.name || "untitled"}</span>
-              {ws.id === activeWorkspaceId ? <span className="tag">active</span> : null}
+              {ws.id === activeWorkspaceId && <span style={styles.tag}>active</span>}
             </div>
           ))}
-          {!workspaces?.length ? <div className="tag">no workspace yet</div> : null}
+
+          {!workspaces?.length && <div style={styles.tag}>no workspace yet</div>}
         </div>
       </div>
 
-      <div className="card">
-        <div className="split">
+      {/* Pages */}
+      <div style={styles.card}>
+        <div style={styles.split}>
           <div>pages</div>
           <button
-            className="btn btnSecondary"
+            style={styles.btnSecondary}
             onClick={onCreatePage}
             type="button"
             disabled={!activeWorkspaceId}
@@ -71,21 +166,26 @@ export default function Sidebar({
             + page
           </button>
         </div>
-        <div className="list" style={{ marginTop: "var(--s-2)" }}>
+
+        <div style={styles.list}>
           {(pages || []).map((p) => (
             <div
               key={p.id}
-              className={`listItem ${p.id === activePageId ? "listItemActive" : ""}`}
               onClick={() => onSelectPage(p.id)}
               role="button"
               tabIndex={0}
+              style={{
+                ...styles.listItem,
+                ...(p.id === activePageId ? styles.listItemActive : {}),
+              }}
             >
               <span>{p.title || "untitled"}</span>
-              {p.archived ? <span className="tag">archived</span> : null}
+              {p.archived && <span style={styles.tag}>archived</span>}
             </div>
           ))}
-          {activeWorkspaceId && !pages?.length ? <div className="tag">no pages yet</div> : null}
-          {!activeWorkspaceId ? <div className="tag">select a workspace</div> : null}
+
+          {activeWorkspaceId && !pages?.length && <div style={styles.tag}>no pages yet</div>}
+          {!activeWorkspaceId && <div style={styles.tag}>select a workspace</div>}
         </div>
       </div>
     </aside>

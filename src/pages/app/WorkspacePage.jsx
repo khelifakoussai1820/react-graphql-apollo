@@ -169,7 +169,191 @@ export default function WorkspacePage() {
   const loading = wsQuery.loading || meQuery.loading || (activeWorkspaceId && workspaceQuery.loading);
   const error = wsQuery.error || meQuery.error || workspaceQuery.error || pageQuery.error || blocksQuery.error;
 
-  return (
+
+  const appStyles = `
+:root {
+  --bg: #ffffff;
+  --panel: #111827;
+  --panel-2: #1f2933;
+  --border: #2a3441;
+  --text: #e5e7eb;
+  --muted: #9ca3af;
+  --primary: #6366f1;
+  --danger: #ef4444;
+  --radius: 12px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+.appShell {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.main {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background: linear-gradient(180deg, #0f172a, #020617);
+}
+
+/* ---------- UI elements ---------- */
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.tag {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 12px;
+  color: var(--muted);
+  background: var(--panel-2);
+  border-radius: 999px;
+}
+
+.errorBox {
+  background: rgba(239,68,68,0.1);
+  border: 1px solid var(--danger);
+  border-radius: var(--radius);
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.errorText {
+  color: var(--danger);
+  font-size: 14px;
+}
+
+/* ---------- buttons ---------- */
+
+.btn {
+  border: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all .2s ease;
+}
+
+.btnPrimary {
+  background: var(--primary);
+  color: white;
+}
+
+.btnPrimary:hover {
+  opacity: .9;
+}
+
+.btnSecondary {
+  background: var(--panel-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.btnSecondary:hover {
+  background: #273449;
+}
+
+/* ---------- inputs ---------- */
+
+.input, select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #020617;
+  color: var(--text);
+  border: 1px solid var(--border);
+  outline: none;
+}
+
+.input:focus, select:focus {
+  border-color: var(--primary);
+}
+
+/* ---------- modal ---------- */
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.modal {
+  width: 100%;
+  max-width: 720px;
+  background: var(--panel);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.6);
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.modalTitle {
+  margin: 0;
+}
+
+/* ---------- lists ---------- */
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.split {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.pill {
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 999px;
+  background: rgba(99,102,241,.15);
+  color: #c7d2fe;
+}
+`;
+
+  return (<>
+    <style> {appStyles} </style>
     <div className="appShell">
       <Sidebar
         workspaces={workspaces}
@@ -213,5 +397,7 @@ export default function WorkspacePage() {
         />
       </main>
     </div>
+  
+  </>
   );
 }

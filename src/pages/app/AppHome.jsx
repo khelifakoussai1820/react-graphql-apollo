@@ -10,7 +10,7 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    background: "linear-gradient(135deg, #f8fafc, #eef2ff)",
+    background: "linear-gradient(135deg, #f8fafc, #5b6482)",
     fontFamily:
       "'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
   },
@@ -40,7 +40,7 @@ const styles = {
 
   buttonPrimary: {
     display: "block",
-    width: "100%",
+    width: "90%",
     padding: "12px 16px",
     marginBottom: "12px",
     borderRadius: "10px",
@@ -54,7 +54,7 @@ const styles = {
 
   buttonSecondary: {
     display: "block",
-    width: "100%",
+    width: "90%",
     padding: "12px 16px",
     borderRadius: "10px",
     border: "1px solid #e2e8f0",
@@ -81,9 +81,7 @@ const styles = {
   },
 };
 
-/* =======================
-        Component
-======================= */
+
 export default function AppHome() {
   const { isAuthed } = useAuth();
 

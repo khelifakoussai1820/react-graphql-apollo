@@ -21,14 +21,20 @@ export default function VerifyOTP() {
     }
   };
 
-  /* =======================
-       Inline modern styles
-  ======================== */
+
   const styles = {
+    page: {
+      minHeight: "100vh",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      background: "linear-gradient(135deg, #f8fafc, #5b6482)",
+      fontFamily:
+        "'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
+    },
+
     form: {
       maxWidth: "400px",
-      marginLeft:"520px",
-      marginTop:"120px",
       padding: "32px",
       background: "#fff",
       borderRadius: "14px",
@@ -39,7 +45,7 @@ export default function VerifyOTP() {
     title: { fontSize: "28px", fontWeight: "700", marginBottom: "8px" },
     helper: { fontSize: "14px", color: "#64748b", marginBottom: "20px" },
     input: {
-      width: "100%",
+      width: "80%",
       padding: "12px",
       marginBottom: "12px",
       borderRadius: "10px",
@@ -49,7 +55,7 @@ export default function VerifyOTP() {
       letterSpacing: "4px",
     },
     btnPrimary: {
-      width: "100%",
+      width: "87%",
       padding: "12px",
       borderRadius: "10px",
       border: "none",
@@ -60,7 +66,7 @@ export default function VerifyOTP() {
       marginBottom: "12px",
     },
     btnSecondary: {
-      width: "100%",
+      width: "80%",
       padding: "12px",
       borderRadius: "10px",
       border: "1px solid #e2e8f0",
@@ -88,7 +94,9 @@ export default function VerifyOTP() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} style={styles.form}>
+
+    <div  style={styles.page}>
+      <form onSubmit={handleSubmit(onSubmit)} style={styles.form}>
       <h2 style={styles.title}>Verify OTP</h2>
       <p style={styles.helper}>Check your email, then enter the 6 digits</p>
 
@@ -111,5 +119,7 @@ export default function VerifyOTP() {
 
       <a style={styles.btnSecondary} href="/auth/login">Back to login</a>
     </form>
-  );
+  
+    </div>
+  );  
 }

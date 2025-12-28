@@ -33,10 +33,18 @@ export default function LoginForm() {
 
 
   const styles = {
+    page: {
+      minHeight: "100vh",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      background: "linear-gradient(135deg, #f8fafc, #5b6482)",
+      fontFamily:
+        "'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
+    },
+
     form: {
       maxWidth: "400px",
-      marginLeft:"520px",
-      marginTop:"180px",
       padding: "32px",
       background: "#fff",
       borderRadius: "14px",
@@ -45,8 +53,10 @@ export default function LoginForm() {
       fontFamily:
         "'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
     },
+
     title: { fontSize: "28px", fontWeight: "700", marginBottom: "8px" },
     helper: { fontSize: "14px", color: "#64748b", marginBottom: "20px" },
+    
     input: {
       width: "100%",
       padding: "12px",
@@ -55,6 +65,7 @@ export default function LoginForm() {
       border: "1px solid #cbd5e1",
       fontSize: "14px",
     },
+
     btnPrimary: {
       width: "100%",
       padding: "12px",
@@ -66,6 +77,7 @@ export default function LoginForm() {
       cursor: "pointer",
       marginBottom: "12px",
     },
+    
     btnSecondary: {
       width: "100%",
       padding: "12px",
@@ -78,12 +90,14 @@ export default function LoginForm() {
       display: "inline-block",
       cursor: "pointer",
     },
+    
     errorText: {
       color: "#dc2626",
       fontSize: "13px",
       marginBottom: "8px",
       textAlign: "left",
     },
+    
     errorBox: {
       background: "#fee2e2",
       color: "#b91c1c",
@@ -95,44 +109,46 @@ export default function LoginForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} style={styles.form}>
-      <h2 style={styles.title}>Login</h2>
-      <p style={styles.helper}>Use your email + password</p>
+      <div style={styles.page}>
+        <form onSubmit={handleSubmit(onSubmit)} style={styles.form}>
+          <h2 style={styles.title}>Login</h2>
+          <p  style={styles.helper}>Use your email + password</p>
 
-      {serverError && <div style={styles.errorBox}>{serverError}</div>}
+          {serverError && <div style={styles.errorBox}>{serverError}</div>}
 
-      <input
-        type="email"
-        placeholder="Email"
-        style={styles.input}
-        {...register("email", {
-          required: "Email is required",
-          pattern: {
-            value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-            message: "Invalid email",
-          },
-        })}
-      />
-      {errors.email && <div style={styles.errorText}>{errors.email.message}</div>}
+          <input
+            type="email"
+            placeholder="Email"
+            style={styles.input}
+            {...register("email", {
+              required: "Email is required",
+              pattern: {
+                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                message: "Invalid email",
+              },
+            })}
+          />
+            {errors.email && <div style={styles.errorText}>{errors.email.message}</div>}
 
-      <input
-        type="password"
-        placeholder="Password"
-        style={styles.input}
-        {...register("password", {
-          required: "Password is required",
-          minLength: { value: 6, message: "Min 6 characters" },
-        })}
-      />
-      {errors.password && <div style={styles.errorText}>{errors.password.message}</div>}
+          <input
+            type="password"
+            placeholder="Password"
+            style={styles.input}
+            {...register("password", {
+              required: "Password is required",
+              minLength: { value: 6, message: "Min 6 characters" },
+            })}
+          />
+          {errors.password && <div style={styles.errorText}>{errors.password.message}</div>}
 
-      <button style={styles.btnPrimary} type="submit" disabled={isSubmitting}>
-        {isSubmitting ? "Logging in..." : "Login"}
-      </button>
+          <button style={styles.btnPrimary} type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Logging in..." : "Login"}
+          </button>
 
-      <a style={styles.btnSecondary} href="/auth/signup">
-        Create account
-      </a>
-    </form>
+          <a style={styles.btnSecondary} href="/auth/signup">
+            Create account
+          </a>
+        </form>
+      </div>
   );
 }
