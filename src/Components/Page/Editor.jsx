@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import Block from "./Block";
 
 export default function Editor({
@@ -9,12 +9,7 @@ export default function Editor({
   onUpdateBlock,
   onDeleteBlock,
 }) {
-  const [title, setTitle] = useState(page?.title || "");
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setTitle(page?.title || "");
-  }, [page?.id]);
+  const [title, setTitle] = useState(() => page?.title ?? "");
 
   const safeBlocks = useMemo(() => blocks || [], [blocks]);
 

@@ -1,3 +1,3 @@
 export default function ErrorPage() {
-  return <h1 style={{color: "red"}}>404 NOT FOUND</h1>;
+  return <h1 className="text-red-400">404 NOT FOUND</h1>;
 }

@@ -1,5 +1,5 @@
-import { useAuthContext } from "../context/AuthContext";
+import useAuth from "../context/useAuth";
 
-export default function useAuth() {
-  return useAuthContext();
+export default function useAuthHook() {
+  return useAuth();
 }

@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { register as registerUser } from "../../api/auth";
+import { useState } from "react";
 
 function toBoolGender(value) {
   if (value === "true") return true;
@@ -10,52 +11,111 @@ function toBoolGender(value) {
 
 export default function SignUpForm() {
   const navigate = useNavigate();
+  const [serverError, setServerError] = useState("");
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm({ mode: "onBlur" });
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({ mode: "onBlur" });
 
   const onSubmit = async (data) => {
     try {
-      const payload = {
-        ...data,
-        gender: toBoolGender(data.gender),
-      };
-
+      setServerError("");
+      const payload = { ...data, gender: toBoolGender(data.gender) };
       const res = await registerUser(payload);
+      const id = res?.userId || res?.id || res?.user?.id || res?.userID;
 
-      if (res?.otpEnabled) {
-        const id = res?.userId || res?.id || res?.user?.id;
-        navigate(`/auth/verify?id=${encodeURIComponent(id || "")}`);
+      if (id) {
+        navigate(`/auth/verify?id=${encodeURIComponent(id)}`, { replace: true });
         return;
       }
-
       navigate("/auth/login", { replace: true });
+
     } catch (err) {
-    // you can show it in UI if you want
       console.error(err);
-      alert(err?.message || "Signup failed");
+      setServerError(err?.message || "Signup failed");
     }
   };
 
+  /* =======================
+       Inline modern styles
+  ======================== */
+  const styles = {
+    form: {
+      maxWidth: "400px",
+      marginLeft:"520px",
+      marginTop:"120px",
+      padding: "32px",
+      background: "#fff",
+      borderRadius: "14px",
+      boxShadow: "0 20px 40px rgba(0,0,0,0.08)",
+      textAlign: "center",
+      fontFamily: "'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
+    },
+    title: { fontSize: "28px", fontWeight: "700", marginBottom: "8px" },
+    helper: { fontSize: "14px", color: "#64748b", marginBottom: "20px" },
+    input: {
+      width: "100%",
+      padding: "12px",
+      marginBottom: "12px",
+      borderRadius: "10px",
+      border: "1px solid #cbd5e1",
+      fontSize: "14px",
+    },
+    btnPrimary: {
+      width: "100%",
+      padding: "12px",
+      borderRadius: "10px",
+      border: "none",
+      background: "#4f46e5",
+      color: "#fff",
+      fontWeight: "600",
+      cursor: "pointer",
+      marginBottom: "12px",
+    },
+    btnSecondary: {
+      width: "100%",
+      padding: "12px",
+      borderRadius: "10px",
+      border: "1px solid #e2e8f0",
+      background: "#fff",
+      color: "#0f172a",
+      fontWeight: "600",
+      textDecoration: "none",
+      display: "inline-block",
+      cursor: "pointer",
+    },
+    errorText: {
+      color: "#dc2626",
+      fontSize: "13px",
+      marginBottom: "8px",
+      textAlign: "left",
+    },
+    errorBox: {
+      background: "#fee2e2",
+      color: "#b91c1c",
+      padding: "10px",
+      borderRadius: "8px",
+      marginBottom: "12px",
+      textAlign: "left",
+    },
+  };
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="form">
-      <h2 className="title">create account</h2>
-      <p className="helper">then you can create workspaces + pages</p>
+    <form onSubmit={handleSubmit(onSubmit)} style={styles.form}>
+      <h2 style={styles.title}>Create Account</h2>
+      <p style={styles.helper}>Then you can create workspaces + pages</p>
+
+      {serverError && <div style={styles.errorBox}>{serverError}</div>}
 
       <input
-        className="input"
-        placeholder="name"
+        placeholder="Name"
+        style={styles.input}
         {...register("name", { required: "Name is required" })}
       />
-      {errors.name ? <div className="errorText">{errors.name.message}</div> : null}
+      {errors.name && <div style={styles.errorText}>{errors.name.message}</div>}
 
       <input
         type="email"
-        className="input"
-        placeholder="email"
+        placeholder="Email"
+        style={styles.input}
         {...register("email", {
           required: "Email is required",
           pattern: {
@@ -64,32 +124,32 @@ export default function SignUpForm() {
           },
         })}
       />
-      {errors.email ? <div className="errorText">{errors.email.message}</div> : null}
+      {errors.email && <div style={styles.errorText}>{errors.email.message}</div>}
 
       <input
         type="password"
-        className="input"
-        placeholder="password"
+        placeholder="Password"
+        style={styles.input}
         {...register("password", {
           required: "Password is required",
           minLength: { value: 6, message: "Min 6 characters" },
         })}
       />
-      {errors.password ? <div className="errorText">{errors.password.message}</div> : null}
+      {errors.password && <div style={styles.errorText}>{errors.password.message}</div>}
 
-      <select className="input" {...register("gender", { required: "Gender is required" })}>
-        <option value="">gender</option>
-        <option value="true">male</option>
-        <option value="false">female</option>
+      <select style={styles.input} {...register("gender", { required: "Gender is required" })}>
+        <option value="">Gender</option>
+        <option value="true">Male</option>
+        <option value="false">Female</option>
       </select>
-      {errors.gender ? <div className="errorText">{errors.gender.message}</div> : null}
+      {errors.gender && <div style={styles.errorText}>{errors.gender.message}</div>}
 
-      <button className="btn btnPrimary" type="submit" disabled={isSubmitting}>
-        {isSubmitting ? "creating..." : "create"}
+      <button style={styles.btnPrimary} type="submit" disabled={isSubmitting}>
+        {isSubmitting ? "Creating..." : "Create"}
       </button>
 
-      <a className="btn btnSecondary" href="/auth/login">
-        already have an account
+      <a style={styles.btnSecondary} href="/auth/login">
+        Already have an account
       </a>
     </form>
   );

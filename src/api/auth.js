@@ -1,5 +1,5 @@
-const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:3000";
-const API_URL = `${API_BASE}/api/v1/auth`;
+const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:8080";
+const API_URL = `${API_BASE}/auth`;
 
 export const register = async (data) => {
   const res = await fetch(`${API_URL}/register`, {

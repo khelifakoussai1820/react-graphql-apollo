@@ -1,36 +1,48 @@
-import { useEffect, useMemo } from "react";
-import { useMutation, useQuery } from "@apollo/client/react";
+import { useEffect, useMemo, useState } from "react";
+import { useQuery, useMutation } from "@apollo/client/react";
 
 import Sidebar from "../../Components/Workspace/Sidebar";
+import WorkspaceSettings from "../../Components/Workspace/WorkspaceSettings";
 import Editor from "../../Components/Page/Editor";
 
 import useWorkspace from "../../hooks/useWorkspace";
 
-import { WORKSPACES } from "../../graphql/queries/workspace";
-import { PAGES, PAGE } from "../../graphql/queries/page";
+import { ME, WORKSPACE, WORKSPACES } from "../../graphql/queries/workspace";
+import { PAGE } from "../../graphql/queries/page";
 import { BLOCKS } from "../../graphql/queries/block";
 
-import { CREATE_WORKSPACE } from "../../graphql/mutations/workspace";
+import {
+  CREATE_WORKSPACE,
+  ADD_WORKSPACE_MEMBER,
+  UPDATE_WORKSPACE_MEMBER_ROLE,
+  REMOVE_WORKSPACE_MEMBER,
+  TRANSFER_WORKSPACE_OWNERSHIP,
+} from "../../graphql/mutations/workspace";
 import { CREATE_PAGE, UPDATE_PAGE } from "../../graphql/mutations/page";
 import { CREATE_BLOCK, UPDATE_BLOCK, DELETE_BLOCK_TREE } from "../../graphql/mutations/block";
 
 export default function WorkspacePage() {
   const { workspaceId, pageId, openWorkspace, openPage } = useWorkspace();
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const wsQuery = useQuery(WORKSPACES, { fetchPolicy: "cache-and-network" });
   const workspaces = wsQuery.data?.workspaces || [];
+
+  const meQuery = useQuery(ME, { fetchPolicy: "cache-first" });
+  const me = meQuery.data?.me || null;
 
   const activeWorkspaceId = useMemo(() => {
     if (workspaceId) return workspaceId;
     return workspaces[0]?.id || "";
   }, [workspaceId, workspaces]);
 
-  const pagesQuery = useQuery(PAGES, {
-    variables: activeWorkspaceId ? { workspaceId: activeWorkspaceId } : undefined,
+  const workspaceQuery = useQuery(WORKSPACE, {
+    variables: activeWorkspaceId ? { id: activeWorkspaceId } : undefined,
     skip: !activeWorkspaceId,
     fetchPolicy: "cache-and-network",
   });
-  const pages = pagesQuery.data?.pages || [];
+  const workspace = workspaceQuery.data?.workspace || null;
+  const pages = workspace?.Pages || [];
 
   const activePageId = useMemo(() => {
     if (pageId) return pageId;
@@ -54,9 +66,24 @@ export default function WorkspacePage() {
     refetchQueries: [{ query: WORKSPACES }],
   });
   const [createPage] = useMutation(CREATE_PAGE, {
-    refetchQueries: activeWorkspaceId ? [{ query: PAGES, variables: { workspaceId: activeWorkspaceId } }] : [],
+    refetchQueries: activeWorkspaceId ? [{ query: WORKSPACE, variables: { id: activeWorkspaceId } }] : [],
   });
   const [updatePage] = useMutation(UPDATE_PAGE);
+
+  const [addWorkspaceMember] = useMutation(ADD_WORKSPACE_MEMBER, {
+    refetchQueries: activeWorkspaceId ? [{ query: WORKSPACE, variables: { id: activeWorkspaceId } }] : [],
+  });
+  const [updateWorkspaceMemberRole] = useMutation(UPDATE_WORKSPACE_MEMBER_ROLE, {
+    refetchQueries: activeWorkspaceId ? [{ query: WORKSPACE, variables: { id: activeWorkspaceId } }] : [],
+  });
+  const [removeWorkspaceMember] = useMutation(REMOVE_WORKSPACE_MEMBER, {
+    refetchQueries: activeWorkspaceId ? [{ query: WORKSPACE, variables: { id: activeWorkspaceId } }] : [],
+  });
+  const [transferWorkspaceOwnership] = useMutation(TRANSFER_WORKSPACE_OWNERSHIP, {
+    refetchQueries: activeWorkspaceId
+      ? [{ query: WORKSPACE, variables: { id: activeWorkspaceId } }, { query: WORKSPACES }]
+      : [{ query: WORKSPACES }],
+  });
 
   const [createBlock] = useMutation(CREATE_BLOCK, {
     refetchQueries: activePageId ? [{ query: BLOCKS, variables: { pageId: activePageId } }] : [],
@@ -92,6 +119,24 @@ export default function WorkspacePage() {
     if (id) openPage(activeWorkspaceId, id);
   };
 
+  const handleAddMember = async (workspaceIdArg, userIdArg, roleArg) => {
+    await addWorkspaceMember({ variables: { workspaceId: workspaceIdArg, userId: userIdArg, role: roleArg } });
+  };
+
+  const handleUpdateRole = async (workspaceIdArg, userIdArg, roleArg) => {
+    await updateWorkspaceMemberRole({ variables: { workspaceId: workspaceIdArg, userId: userIdArg, role: roleArg } });
+  };
+
+  const handleRemoveMember = async (workspaceIdArg, userIdArg) => {
+    const ok = confirm("Remove this member from the workspace?");
+    if (!ok) return;
+    await removeWorkspaceMember({ variables: { workspaceId: workspaceIdArg, userId: userIdArg } });
+  };
+
+  const handleTransferOwnership = async (workspaceIdArg, newOwnerUserId) => {
+    await transferWorkspaceOwnership({ variables: { workspaceId: workspaceIdArg, newOwnerUserId } });
+  };
+
   const handleRenamePage = async (id, title) => {
     if (!id) return;
     const next = (title || "").trim();
@@ -121,8 +166,8 @@ export default function WorkspacePage() {
     await deleteBlockTree({ variables: { id } });
   };
 
-  const loading = wsQuery.loading || (activeWorkspaceId && pagesQuery.loading);
-  const error = wsQuery.error || pagesQuery.error || pageQuery.error || blocksQuery.error;
+  const loading = wsQuery.loading || meQuery.loading || (activeWorkspaceId && workspaceQuery.loading);
+  const error = wsQuery.error || meQuery.error || workspaceQuery.error || pageQuery.error || blocksQuery.error;
 
   return (
     <div className="appShell">
@@ -135,6 +180,7 @@ export default function WorkspacePage() {
         activePageId={activePageId}
         onSelectPage={(pid) => openPage(activeWorkspaceId, pid)}
         onCreatePage={handleCreatePage}
+        onOpenWorkspaceSettings={() => setSettingsOpen(true)}
       />
 
       <main className="main">
@@ -146,12 +192,24 @@ export default function WorkspacePage() {
         ) : null}
 
         <Editor
+          key={activePageId || "no-page"}
           page={pageQuery.data?.page || null}
           blocks={blocks}
           onRenamePage={handleRenamePage}
           onCreateParagraph={handleCreateParagraph}
           onUpdateBlock={handleUpdateBlock}
           onDeleteBlock={handleDeleteBlock}
+        />
+
+        <WorkspaceSettings
+          open={settingsOpen}
+          onClose={() => setSettingsOpen(false)}
+          workspace={workspace}
+          me={me}
+          onAddMember={handleAddMember}
+          onUpdateRole={handleUpdateRole}
+          onRemoveMember={handleRemoveMember}
+          onTransferOwnership={handleTransferOwnership}
         />
       </main>
     </div>

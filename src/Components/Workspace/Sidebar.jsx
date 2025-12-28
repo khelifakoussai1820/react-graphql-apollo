@@ -9,6 +9,7 @@ export default function Sidebar({
   activePageId,
   onSelectPage,
   onCreatePage,
+  onOpenWorkspaceSettings,
 }) {
   const { logout } = useAuth();
 
@@ -25,7 +26,21 @@ export default function Sidebar({
       <div className="card">
         <div className="split">
           <div>workspaces</div>
-          <button className="btn btnSecondary" onClick={onCreateWorkspace} type="button">+ ws</button>
+          <div style={{ display: "flex", gap: "var(--s-1)" }}>
+            <button className="btn btnSecondary" onClick={onCreateWorkspace} type="button" style={{ width: "auto" }}>
+              + ws
+            </button>
+            <button
+              className="btn btnSecondary"
+              onClick={onOpenWorkspaceSettings}
+              type="button"
+              style={{ width: "auto" }}
+              disabled={!activeWorkspaceId}
+              title={activeWorkspaceId ? "Manage members & roles" : "Select a workspace first"}
+            >
+              settings
+            </button>
+          </div>
         </div>
         <div className="list" style={{ marginTop: "var(--s-2)" }}>
           {(workspaces || []).map((ws) => (

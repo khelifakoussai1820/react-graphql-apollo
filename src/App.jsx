@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
 
-import { AuthProvider, useAuthContext } from "./context/AuthContext";
+import AuthProvider from "./context/AuthContext.jsx";
+import useAuth from "./context/UseAuth";
 
 import AppHome from "./pages/app/AppHome";
 import WorkspacePage from "./pages/app/WorkspacePage";
@@ -12,7 +13,7 @@ import Verify from "./pages/auth/verify";
 import ErrorPage from "./pages/errors/ErrorPage";
 
 function RequireAuth({ children }) {
-  const { isAuthed } = useAuthContext();
+  const { isAuthed } = useAuth();
   if (!isAuthed) return <Navigate to="/auth/login" replace />;
   return children;
 }

@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 
 :root {
   font-size: 2.1vh;
@@ -184,6 +186,69 @@ button, input, select, textarea {
 .tag {
   color: var(--muted);
   font-size: 1.5vh;
+}
+
+/* Modal */
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.62);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--s-4);
+  z-index: 50;
+}
+
+.modal {
+  width: min(92vw, 88vh);
+  max-height: 88vh;
+  overflow: auto;
+  background: var(--panel);
+  border: 0.2vh solid var(--border);
+  border-radius: var(--r-1);
+  padding: var(--s-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2);
+}
+
+.modalTitle {
+  font-size: 2.2vh;
+  margin: 0;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-2);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2);
+  padding: var(--s-2);
+  border-radius: var(--r-1);
+  border: 0.2vh solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.pill {
+  padding: 0.4vh 0.9vh;
+  border-radius: 100vh;
+  border: 0.2vh solid var(--border);
+  color: var(--muted);
+  font-size: 1.4vh;
 }
 
 /* Editor */

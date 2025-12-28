@@ -5,7 +5,9 @@ function Verify() {
         <>
             <VerifyOTP />
         
-
+        
+        
+        
         
         
         </>
