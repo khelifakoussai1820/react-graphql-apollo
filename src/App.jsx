@@ -25,8 +25,8 @@ const router = createBrowserRouter([
   { path: "/auth/login", element: <Login /> },
   { path: "/auth/verify", element: <Verify /> },
 
-  { path: "/app", element: <WorkspacePage /> },
-  { path: "/app/w/:workspaceId", element: <WorkspacePage /> },
+  { path: "/app", element: <RequireAuth> <WorkspacePage /></RequireAuth>   },
+  { path: "/app/w/:workspaceId", element: <RequireAuth><WorkspacePage /></RequireAuth> },
   { path: "/app/w/:workspaceId/p/:pageId", element: <RequireAuth><WorkspacePage /></RequireAuth> },
 
   { path: "*", element: <ErrorPage /> },
